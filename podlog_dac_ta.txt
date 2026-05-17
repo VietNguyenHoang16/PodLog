@@ -1,0 +1,186 @@
+================================================================
+PODLOG — ỨNG DỤNG QUẢN LÝ HỌC PODCAST TIẾNG ANH
+Đặc tả sản phẩm · Phiên bản 1.0
+================================================================
+
+----------------------------------------------------------------
+1. TỔNG QUAN
+----------------------------------------------------------------
+PodLog là ứng dụng giúp người học tiếng Anh qua podcast theo dõi
+và quản lý hành trình học tập từ nhiều kênh/nguồn khác nhau.
+Mỗi bài học được lưu lại với đầy đủ thông tin: URL, ghi chú,
+trạng thái, từ vựng và lịch ôn tập.
+
+----------------------------------------------------------------
+2. TÍNH NĂNG CỐT LÕI (Yêu cầu gốc)
+----------------------------------------------------------------
+
+2.1. Quản lý kênh / nguồn học
+    - Tạo, sửa, xoá kênh (BBC, VOA, TED Talks, v.v.)
+    - Mỗi kênh là một không gian riêng biệt để tổ chức bài học
+    - Thêm icon hoặc thumbnail đại diện cho kênh
+
+2.2. Quản lý bài học (Episode)
+    - Thêm bài học vào một kênh cụ thể
+    - Mỗi bài có thể lưu bằng URL hoặc ghi chú thủ công (không cần URL)
+    - Chỉnh sửa và xoá bài học
+
+2.3. Cảnh báo trùng URL
+    - Khi nhập URL mới, hệ thống kiểm tra ngay trong cùng kênh
+    - Nếu URL đã tồn tại: hiển thị cảnh báo kèm link đến bài đã lưu
+    - Cho phép người dùng chọn: xem lại bài cũ hoặc vẫn thêm mới
+
+2.4. Ghi chú bài học
+    - Ghi chú tự do: từ vựng, cấu trúc câu, nội dung nổi bật
+    - Hỗ trợ định dạng markdown cơ bản
+
+----------------------------------------------------------------
+3. TÍNH NĂNG ĐỀ XUẤT MỞ RỘNG
+----------------------------------------------------------------
+
+3.1. Trạng thái bài học
+    - Các trạng thái: Chưa nghe / Đang nghe / Đã xong / Muốn ôn lại
+    - Lọc danh sách bài theo trạng thái
+    - Hiển thị badge màu sắc tương ứng
+
+3.2. Đánh giá độ khó & chất lượng
+    - Cho điểm độ khó từ 1–5 (dễ → khó)
+    - Cho điểm chất lượng/độ hay từ 1–5 sao
+    - Dùng điểm này để ưu tiên gợi ý ôn tập
+
+3.3. Tags chủ đề
+    - Gắn nhiều tag cho mỗi bài: #business #daily-life #science
+    - Lọc bài học theo tag xuyên suốt nhiều kênh khác nhau
+    - Quản lý danh sách tag toàn cục
+
+3.4. Thời lượng & ngày học
+    - Lưu thời lượng bài (đơn vị: phút)
+    - Ghi nhận ngày nghe lần đầu và ngày ôn gần nhất
+    - Tính tổng thời gian học trong tuần/tháng
+
+3.5. Lịch ôn tập thông minh (Spaced Repetition)
+    - Gợi ý bài cần ôn theo chu kỳ: 1 ngày → 7 ngày → 30 ngày
+    - Chu kỳ điều chỉnh dựa trên điểm đánh giá và độ khó
+    - Danh sách "Cần ôn hôm nay" hiển thị trên màn hình chính
+
+3.6. Thống kê học tập
+    - Tổng số bài đã học, đang học, chưa học
+    - Tổng phút học trong tuần / tháng
+    - Biểu đồ streak học hàng ngày (chuỗi ngày liên tục)
+    - Số từ vựng đã ghi nhận
+
+3.7. Tìm kiếm toàn cục
+    - Tìm kiếm theo tiêu đề, nội dung ghi chú, từ vựng, tag
+    - Kết quả tìm kiếm xuyên suốt tất cả các kênh
+    - Lọc kết hợp: kênh + tag + trạng thái + khoảng thời gian
+
+3.8. Từ điển từ vựng cá nhân
+    - Gom tất cả từ vựng đã note từ mọi bài thành một danh sách
+    - Hiển thị từ kèm nghĩa, ví dụ, và bài học nguồn
+    - Chế độ ôn từ vựng (flashcard đơn giản)
+
+----------------------------------------------------------------
+4. MÔ HÌNH DỮ LIỆU
+----------------------------------------------------------------
+
+[Kênh - Channel]
+    - id
+    - name               (tên kênh)
+    - icon / thumbnail   (ảnh đại diện)
+    - homepage_url       (tuỳ chọn)
+    - description        (mô tả ngắn)
+    - created_at
+
+[Bài học - Episode]
+    - id
+    - channel_id         (liên kết với kênh)
+    - title              (bắt buộc)
+    - url                (tuỳ chọn)
+    - status             (chưa_nghe | đang_nghe | đã_xong | ôn_lại)
+    - difficulty         (1–5)
+    - rating             (1–5)
+    - duration_min       (thời lượng, phút)
+    - tags[]             (danh sách tag)
+    - notes              (ghi chú dạng markdown)
+    - vocabulary[]       (danh sách từ vựng)
+    - listened_at        (ngày nghe lần đầu)
+    - next_review_at     (ngày ôn tiếp theo)
+    - created_at
+    - updated_at
+
+[Từ vựng - Vocabulary]
+    - id
+    - episode_id         (liên kết với bài)
+    - word
+    - definition         (nghĩa)
+    - example            (câu ví dụ)
+    - created_at
+
+----------------------------------------------------------------
+5. LUỒNG THÊM BÀI HỌC MỚI
+----------------------------------------------------------------
+
+Bước 1: Chọn kênh muốn thêm bài
+         → Nếu kênh chưa tồn tại: tạo kênh mới trước
+
+Bước 2: Nhập URL bài podcast (tuỳ chọn)
+         → Hệ thống kiểm tra trùng URL trong cùng kênh ngay khi
+           người dùng rời khỏi ô nhập
+
+Bước 3: Xử lý trùng URL
+         → Trùng: hiện cảnh báo + link bài cũ
+                  Hỏi: "Xem lại bài cũ" hoặc "Vẫn thêm mới"
+         → Không trùng: tiếp tục
+
+Bước 4: Điền thông tin bài học
+         → Tiêu đề, tags, độ khó, thời lượng
+         → Ghi chú và từ vựng (có thể bổ sung sau)
+
+Bước 5: Chọn trạng thái ban đầu và lưu
+         → Nếu trạng thái là "Đã xong": hệ thống tự tính
+           next_review_at theo chu kỳ spaced repetition
+
+----------------------------------------------------------------
+6. ĐỀ XUẤT KỸ THUẬT
+----------------------------------------------------------------
+
+Frontend:
+    - React / Next.js
+    - Tailwind CSS
+    - PWA (Progressive Web App) để dùng offline
+
+Lưu trữ:
+    - Giai đoạn đầu: IndexedDB (lưu trữ local, không cần server)
+    - Mở rộng: Supabase hoặc Firebase (đồng bộ đa thiết bị)
+
+Tính năng kỹ thuật:
+    - Export dữ liệu ra JSON / CSV
+    - Dark mode
+    - Responsive (mobile + desktop)
+
+----------------------------------------------------------------
+7. LỘ TRÌNH PHÁT TRIỂN
+----------------------------------------------------------------
+
+Phase 1 — MVP (ưu tiên cao nhất)
+    [x] Quản lý kênh (thêm / sửa / xoá)
+    [x] Thêm, sửa, xoá bài học
+    [x] Cảnh báo trùng URL trong cùng kênh
+    [x] Trạng thái bài học
+    [x] Ghi chú tự do
+
+Phase 2 — Tính năng học tập
+    [ ] Tags và bộ lọc
+    [ ] Tìm kiếm toàn cục
+    [ ] Từ điển từ vựng cá nhân
+    [ ] Thống kê cơ bản (số bài, số phút)
+
+Phase 3 — Ôn tập thông minh
+    [ ] Spaced repetition (lịch ôn tập)
+    [ ] Biểu đồ streak hàng ngày
+    [ ] Export dữ liệu JSON / CSV
+    [ ] PWA offline
+
+================================================================
+Tài liệu tạo ngày: 17/05/2026
+================================================================
