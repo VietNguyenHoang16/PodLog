@@ -22,17 +22,35 @@ export function EpisodeDetail({ episode, onClose, onUpdateEpisode }: EpisodeDeta
   const [word, setWord] = useState('');
   const [definition, setDefinition] = useState('');
   const [example, setExample] = useState('');
-  const [progressH, setProgressH] = useState(String(Math.floor((episode.progress_seconds || 0) / 3600)));
-  const [progressM, setProgressM] = useState(String(Math.floor(((episode.progress_seconds || 0) % 3600) / 60)));
-  const [progressS, setProgressS] = useState(String((episode.progress_seconds || 0) % 60));
+  const formatProgressInput = (seconds: number): string => {
+    if (!seconds) return '';
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = seconds % 60;
+    if (h > 0) return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    return `${m}:${String(s).padStart(2, '0')}`;
+  };
+
+  const parseProgress = (val: string): number => {
+    const trimmed = val.trim();
+    if (!trimmed) return 0;
+    if (/^\d+$/.test(trimmed)) return parseInt(trimmed, 10) * 60;
+    const parts = trimmed.split(':');
+    if (parts.length === 2) {
+      return (parseInt(parts[0], 10) || 0) * 60 + (parseInt(parts[1], 10) || 0);
+    }
+    if (parts.length === 3) {
+      return (parseInt(parts[0], 10) || 0) * 3600 + (parseInt(parts[1], 10) || 0) * 60 + (parseInt(parts[2], 10) || 0);
+    }
+    return 0;
+  };
+
+  const [progressInput, setProgressInput] = useState(formatProgressInput(episode.progress_seconds || 0));
 
   const vocab = episode.vocabulary || [];
 
   const saveProgress = () => {
-    const h = parseInt(progressH, 10) || 0;
-    const m = parseInt(progressM, 10) || 0;
-    const s = parseInt(progressS, 10) || 0;
-    const total = h * 3600 + m * 60 + s;
+    const total = parseProgress(progressInput);
     onUpdateEpisode({
       ...episode,
       progress_seconds: total,
@@ -110,40 +128,15 @@ export function EpisodeDetail({ episode, onClose, onUpdateEpisode }: EpisodeDeta
             Tiến độ nghe
           </h3>
           <div className="flex items-end gap-2 flex-wrap">
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-2">
               <input
-                type="number"
-                value={progressH}
-                onChange={(e) => setProgressH(e.target.value)}
-                className="w-14 px-2 py-1.5 border border-neutral-200 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 text-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="0"
-                min="0"
+                type="text"
+                value={progressInput}
+                onChange={(e) => setProgressInput(e.target.value)}
+                className="w-40 px-3 py-1.5 border border-neutral-200 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="vd: 45 hoặc 45:12 hoặc 1:23:45"
               />
-              <span className="text-xs text-neutral-400">giờ</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <input
-                type="number"
-                value={progressM}
-                onChange={(e) => setProgressM(e.target.value)}
-                className="w-14 px-2 py-1.5 border border-neutral-200 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 text-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="0"
-                min="0"
-                max="59"
-              />
-              <span className="text-xs text-neutral-400">phút</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <input
-                type="number"
-                value={progressS}
-                onChange={(e) => setProgressS(e.target.value)}
-                className="w-14 px-2 py-1.5 border border-neutral-200 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 text-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="0"
-                min="0"
-                max="59"
-              />
-              <span className="text-xs text-neutral-400">giây</span>
+              <span className="text-xs text-neutral-400">phút / phút:giây / giờ:phút:giây</span>
             </div>
             <button
               onClick={saveProgress}

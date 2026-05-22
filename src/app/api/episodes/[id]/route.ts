@@ -12,6 +12,12 @@ export async function GET(_req: NextRequest, { params }: { params: { id: string 
   }
 }
 
+function parseDate(val: unknown): string | null {
+  if (!val) return null;
+  const d = new Date(val as string);
+  return isNaN(d.getTime()) ? null : d.toISOString();
+}
+
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
   try {
     const body = await req.json();
@@ -35,9 +41,9 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
         JSON.stringify(body.vocabulary || []),
         body.progress_seconds ?? 0,
         body.duration_seconds ?? null,
-        body.listened_at || null,
-        body.next_review_at || null,
-        new Date().toISOString(),
+        parseDate(body.listened_at),
+        parseDate(body.next_review_at),
+        parseDate(body.updated_at) || new Date().toISOString(),
         params.id,
       ],
     );
