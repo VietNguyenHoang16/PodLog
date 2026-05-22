@@ -23,11 +23,34 @@ export function EpisodeForm({ episode, channelId, onClose, onSave, onDelete }: E
   const [durationMin, setDurationMin] = useState(
     episode?.duration_seconds ? String(Math.floor(episode.duration_seconds / 60)) : '',
   );
+  const formatProgressInput = (seconds: number): string => {
+    if (!seconds) return '';
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = seconds % 60;
+    if (h > 0) return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    return `${m}:${String(s).padStart(2, '0')}`;
+  };
+  const parseProgress = (val: string): number => {
+    const trimmed = val.trim();
+    if (!trimmed) return 0;
+    if (/^\d+$/.test(trimmed)) return parseInt(trimmed, 10) * 60;
+    const parts = trimmed.split(':');
+    if (parts.length === 2) {
+      return (parseInt(parts[0], 10) || 0) * 60 + (parseInt(parts[1], 10) || 0);
+    }
+    if (parts.length === 3) {
+      return (parseInt(parts[0], 10) || 0) * 3600 + (parseInt(parts[1], 10) || 0) * 60 + (parseInt(parts[2], 10) || 0);
+    }
+    return 0;
+  };
+  const [progressInput, setProgressInput] = useState(formatProgressInput(episode?.progress_seconds || 0));
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) return;
     const durationSeconds = durationMin ? parseInt(durationMin, 10) * 60 : undefined;
+    const progressSeconds = parseProgress(progressInput);
     onSave({
       ...(episode || {} as Episode),
       id: episode?.id || crypto.randomUUID(),
@@ -39,6 +62,7 @@ export function EpisodeForm({ episode, channelId, onClose, onSave, onDelete }: E
       level,
       notes: notes.trim(),
       duration_seconds: durationSeconds ?? episode?.duration_seconds,
+      progress_seconds: progressSeconds,
       updated_at: new Date(),
     } as Episode);
   };
@@ -66,6 +90,11 @@ export function EpisodeForm({ episode, channelId, onClose, onSave, onDelete }: E
             <div>
               <label className="block text-sm font-medium mb-1 text-neutral-700 dark:text-neutral-300">Thời lượng (phút)</label>
               <input type="number" value={durationMin} onChange={(e) => setDurationMin(e.target.value)} className={inputClass} placeholder="VD: 45" min="0" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1 text-neutral-700 dark:text-neutral-300">Đã nghe đến đâu</label>
+              <input type="text" value={progressInput} onChange={(e) => setProgressInput(e.target.value)} className={inputClass} placeholder="VD: 30 hoặc 30:15 hoặc 1:23:45" />
+              <p className="text-xs text-neutral-400 mt-1">phút / phút:giây / giờ:phút:giây</p>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
