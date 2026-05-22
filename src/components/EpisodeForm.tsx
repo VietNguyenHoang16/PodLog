@@ -29,6 +29,7 @@ export function EpisodeForm({ episode, channelId, onClose, onSave, onDelete }: E
     if (!title.trim()) return;
     const durationSeconds = durationMin ? parseInt(durationMin, 10) * 60 : undefined;
     onSave({
+      ...(episode || {} as Episode),
       id: episode?.id || crypto.randomUUID(),
       channel_id: episode?.channel_id || channelId,
       title: title.trim(),
@@ -36,15 +37,10 @@ export function EpisodeForm({ episode, channelId, onClose, onSave, onDelete }: E
       image: imageUrl.trim() || undefined,
       status,
       level,
-      rating: episode?.rating || 3,
-      tags: episode?.tags || [],
       notes: notes.trim(),
-      vocabulary: episode?.vocabulary || [],
-      progress_seconds: episode?.progress_seconds || 0,
-      duration_seconds: durationSeconds,
-      created_at: episode?.created_at || new Date(),
+      duration_seconds: durationSeconds ?? episode?.duration_seconds,
       updated_at: new Date(),
-    });
+    } as Episode);
   };
 
   const inputClass = 'w-full px-3 py-2 border border-neutral-200 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent';
