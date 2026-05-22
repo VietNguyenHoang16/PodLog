@@ -293,7 +293,7 @@ export default function Home() {
                   Kênh học tập
                 </h2>
                 <button
-                  onClick={() => setShowChannelForm(true)}
+                  onClick={() => { setSelectedChannel(null); setShowChannelForm(true); }}
                   className="w-7 h-7 rounded-md bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
                   title="Thêm kênh"
                 >
