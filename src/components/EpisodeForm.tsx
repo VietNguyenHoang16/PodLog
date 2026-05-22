@@ -20,10 +20,14 @@ export function EpisodeForm({ episode, channelId, onClose, onSave, onDelete }: E
   const [status, setStatus] = useState<Episode['status']>(episode?.status || 'chua_nghe');
   const [level, setLevel] = useState<Episode['level']>(episode?.level || 'B1');
   const [notes, setNotes] = useState(episode?.notes || '');
+  const [durationMin, setDurationMin] = useState(
+    episode?.duration_seconds ? String(Math.floor(episode.duration_seconds / 60)) : '',
+  );
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) return;
+    const durationSeconds = durationMin ? parseInt(durationMin, 10) * 60 : undefined;
     onSave({
       id: episode?.id || crypto.randomUUID(),
       channel_id: episode?.channel_id || channelId,
@@ -36,6 +40,8 @@ export function EpisodeForm({ episode, channelId, onClose, onSave, onDelete }: E
       tags: episode?.tags || [],
       notes: notes.trim(),
       vocabulary: episode?.vocabulary || [],
+      progress_seconds: episode?.progress_seconds || 0,
+      duration_seconds: durationSeconds,
       created_at: episode?.created_at || new Date(),
       updated_at: new Date(),
     });
@@ -60,6 +66,10 @@ export function EpisodeForm({ episode, channelId, onClose, onSave, onDelete }: E
             <div>
               <label className="block text-sm font-medium mb-1 text-neutral-700 dark:text-neutral-300">Hình ảnh</label>
               <input type="url" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} className={inputClass} placeholder="https://... (url ảnh bìa)" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1 text-neutral-700 dark:text-neutral-300">Thời lượng (phút)</label>
+              <input type="number" value={durationMin} onChange={(e) => setDurationMin(e.target.value)} className={inputClass} placeholder="VD: 45" min="0" />
             </div>
 
             <div className="grid grid-cols-2 gap-3">

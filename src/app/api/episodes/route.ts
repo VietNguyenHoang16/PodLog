@@ -23,8 +23,8 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const { rows } = await pool.query(
-      `INSERT INTO episodes (id, channel_id, title, url, image, status, level, rating, tags, notes, vocabulary, listened_at, next_review_at, created_at, updated_at)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+      `INSERT INTO episodes (id, channel_id, title, url, image, status, level, rating, tags, notes, vocabulary, progress_seconds, duration_seconds, listened_at, next_review_at, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
        RETURNING *`,
       [
         body.id,
@@ -38,6 +38,8 @@ export async function POST(req: NextRequest) {
         JSON.stringify(body.tags || []),
         body.notes || '',
         JSON.stringify(body.vocabulary || []),
+        body.progress_seconds ?? 0,
+        body.duration_seconds ?? null,
         body.listened_at || null,
         body.next_review_at || null,
         body.created_at || new Date().toISOString(),

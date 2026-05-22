@@ -19,8 +19,9 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       `UPDATE episodes
        SET title = $1, url = $2, image = $3, status = $4, level = $5, rating = $6,
            tags = $7, notes = $8, vocabulary = $9,
-           listened_at = $10, next_review_at = $11, updated_at = $12
-       WHERE id = $13
+           progress_seconds = $10, duration_seconds = $11,
+           listened_at = $12, next_review_at = $13, updated_at = $14
+       WHERE id = $15
        RETURNING *`,
       [
         body.title,
@@ -32,6 +33,8 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
         JSON.stringify(body.tags || []),
         body.notes || '',
         JSON.stringify(body.vocabulary || []),
+        body.progress_seconds ?? 0,
+        body.duration_seconds ?? null,
         body.listened_at || null,
         body.next_review_at || null,
         new Date().toISOString(),

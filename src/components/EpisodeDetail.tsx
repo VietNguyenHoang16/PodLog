@@ -9,12 +9,36 @@ interface EpisodeDetailProps {
   onUpdateEpisode: (episode: Episode) => void;
 }
 
+function formatTime(totalSeconds: number): string {
+  if (totalSeconds <= 0) return '';
+  const h = Math.floor(totalSeconds / 3600);
+  const m = Math.floor((totalSeconds % 3600) / 60);
+  const s = totalSeconds % 60;
+  if (h > 0) return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  return `${m}:${String(s).padStart(2, '0')}`;
+}
+
 export function EpisodeDetail({ episode, onClose, onUpdateEpisode }: EpisodeDetailProps) {
   const [word, setWord] = useState('');
   const [definition, setDefinition] = useState('');
   const [example, setExample] = useState('');
+  const [progressH, setProgressH] = useState(String(Math.floor((episode.progress_seconds || 0) / 3600)));
+  const [progressM, setProgressM] = useState(String(Math.floor(((episode.progress_seconds || 0) % 3600) / 60)));
+  const [progressS, setProgressS] = useState(String((episode.progress_seconds || 0) % 60));
 
   const vocab = episode.vocabulary || [];
+
+  const saveProgress = () => {
+    const h = parseInt(progressH, 10) || 0;
+    const m = parseInt(progressM, 10) || 0;
+    const s = parseInt(progressS, 10) || 0;
+    const total = h * 3600 + m * 60 + s;
+    onUpdateEpisode({
+      ...episode,
+      progress_seconds: total,
+      updated_at: new Date(),
+    });
+  };
 
   const addVocab = () => {
     if (!word.trim()) return;
@@ -79,6 +103,62 @@ export function EpisodeDetail({ episode, onClose, onUpdateEpisode }: EpisodeDeta
             </div>
           </div>
         )}
+
+        {/* Progress */}
+        <div className="px-5 pt-4 shrink-0">
+          <h3 className="text-xs font-bold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider mb-2">
+            Tiến độ nghe
+          </h3>
+          <div className="flex items-end gap-2 flex-wrap">
+            <div className="flex items-center gap-1">
+              <input
+                type="number"
+                value={progressH}
+                onChange={(e) => setProgressH(e.target.value)}
+                className="w-14 px-2 py-1.5 border border-neutral-200 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 text-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="0"
+                min="0"
+              />
+              <span className="text-xs text-neutral-400">giờ</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <input
+                type="number"
+                value={progressM}
+                onChange={(e) => setProgressM(e.target.value)}
+                className="w-14 px-2 py-1.5 border border-neutral-200 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 text-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="0"
+                min="0"
+                max="59"
+              />
+              <span className="text-xs text-neutral-400">phút</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <input
+                type="number"
+                value={progressS}
+                onChange={(e) => setProgressS(e.target.value)}
+                className="w-14 px-2 py-1.5 border border-neutral-200 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 text-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="0"
+                min="0"
+                max="59"
+              />
+              <span className="text-xs text-neutral-400">giây</span>
+            </div>
+            <button
+              onClick={saveProgress}
+              className="px-4 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+            >
+              Lưu
+            </button>
+          </div>
+          {episode.progress_seconds > 0 && (
+            <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1.5">
+              Đã nghe: {formatTime(episode.progress_seconds)}
+              {episode.duration_seconds ? ` / ${formatTime(episode.duration_seconds)}` : ''}
+            </p>
+          )}
+        </div>
 
         {/* Vocabulary list */}
         <div className="flex-1 overflow-y-auto px-5 py-4">

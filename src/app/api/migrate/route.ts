@@ -42,6 +42,10 @@ export async function POST() {
     // Add image column if not exists
     await pool.query(`ALTER TABLE episodes ADD COLUMN IF NOT EXISTS image TEXT;`);
 
+    // Add progress columns if not exists
+    await pool.query(`ALTER TABLE episodes ADD COLUMN IF NOT EXISTS progress_seconds INTEGER NOT NULL DEFAULT 0;`);
+    await pool.query(`ALTER TABLE episodes ADD COLUMN IF NOT EXISTS duration_seconds INTEGER;`);
+
     return NextResponse.json({ ok: true, message: 'Schema up to date' });
   } catch (e) {
     console.error('Migration error:', e);

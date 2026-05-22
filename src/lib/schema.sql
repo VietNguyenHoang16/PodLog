@@ -21,9 +21,11 @@ CREATE TABLE IF NOT EXISTS episodes (
   rating         INTEGER NOT NULL DEFAULT 3 CHECK (rating BETWEEN 1 AND 5),
   tags           JSONB NOT NULL DEFAULT '[]'::jsonb,
   notes          TEXT NOT NULL DEFAULT '',
-  vocabulary     JSONB NOT NULL DEFAULT '[]'::jsonb,
-  listened_at    TIMESTAMPTZ,
-  next_review_at TIMESTAMPTZ,
+  vocabulary        JSONB NOT NULL DEFAULT '[]'::jsonb,
+  progress_seconds  INTEGER NOT NULL DEFAULT 0,
+  duration_seconds  INTEGER,
+  listened_at       TIMESTAMPTZ,
+  next_review_at    TIMESTAMPTZ,
   created_at     TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at     TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );

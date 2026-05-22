@@ -1,0 +1,6 @@
+ ✓ Compiled /_error in 139ms (718 modules)
+ GET /_next/static/chunks/app-pages-internals.js 500 in 2436ms
+ GET /_next/static/chunks/main-app.js?v=1779048689527 500 in 2454ms
+ ✓ Compiled /icon.svg in 204ms (330 modules)
+ GET /icon.svg?6dfcce5790800900 200 in 265ms
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename 'C:\Users\ASUS\Desktop\Ung dung\PodLog\.next\cache\webpack\client-development-fallback\0.pack.gz_' -> 'C:\Users\ASUS\Desktop\Ung dung\PodLog\.next\cache\webpack\client-development-fallback\0.pack.gz'

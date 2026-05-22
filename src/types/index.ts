@@ -20,6 +20,8 @@ export interface Episode {
   tags: string[];
   notes: string;
   vocabulary: Vocabulary[];
+  progress_seconds: number;
+  duration_seconds?: number;
   listened_at?: Date;
   next_review_at?: Date;
   created_at: Date;
