@@ -48,6 +48,8 @@ function makeEpisode(overrides: Partial<Episode>, channelId: string): Episode {
     tags: overrides.tags || [],
     notes: overrides.notes || '',
     vocabulary: overrides.vocabulary || [],
+    progress_seconds: overrides.progress_seconds ?? 0,
+    duration_seconds: overrides.duration_seconds ?? undefined,
     listened_at: overrides.listened_at,
     next_review_at: overrides.next_review_at,
     created_at: overrides.created_at || new Date(),
