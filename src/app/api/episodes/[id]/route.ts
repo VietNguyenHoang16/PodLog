@@ -30,12 +30,12 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
        WHERE id = $15
        RETURNING *`,
       [
-        body.title,
+        body.title || null,
         body.url || null,
         body.image || null,
-        body.status,
+        body.status || 'chua_nghe',
         body.level || 'B1',
-        body.rating || 3,
+        body.rating ?? 3,
         JSON.stringify(body.tags || []),
         body.notes || '',
         JSON.stringify(body.vocabulary || []),
